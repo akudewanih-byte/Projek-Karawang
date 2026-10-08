@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Project Cost Manager V3.1</title>
+<title>Project Cost Manager V3.2</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f6f8;color:#1f2937}
@@ -73,7 +73,7 @@ td input,td select{min-width:100px;padding:7px}
 <body>
 <header>
   <div class="container">
-    <h1>Project Cost Manager V3.1</h1>
+    <h1>Project Cost Manager V3.2</h1>
     <p>Kelola Material, Upah, BOP dan HPP proyek dalam satu dashboard.</p>
   </div>
 </header>
@@ -355,14 +355,34 @@ function downloadFile(name,type,data){
 function printProject(){
  const p=current(); if(!p)return;
  const labels={material:'MATERIAL',upah:'UPAH',bop:'BOP'};
- let out=`<div class="print-title">REKAP BIAYA PROYEK</div>
- <div class="print-meta"><b>${esc(p.name||'Tanpa Nama')}</b> &nbsp; | &nbsp; Tanggal Proyek: ${esc(p.date||'-')} &nbsp; | &nbsp; Status: ${esc(p.status||'Draft')}</div>`;
+ const q=(document.getElementById('globalFilter').value||'').trim().toLowerCase();
+
+ // PDF mengikuti filter yang sedang aktif.
+ const filtered={};
  ['material','upah','bop'].forEach(key=>{
-   const arr=p[key]||[];
-   const total=totalRows(arr);
+   filtered[key]=(p[key]||[]).filter(r=>
+     !q || [r.date,r.name,r.kind,r.unit].join(' ').toLowerCase().includes(q)
+   );
+ });
+
+ const filteredTotal=key=>totalRows(filtered[key]);
+ const grandTotal=filteredTotal('material')+filteredTotal('upah')+filteredTotal('bop');
+
+ let out=`<div class="print-title">REKAP BIAYA PROYEK</div>
+ <div class="print-meta">
+   <b>${esc(p.name||'Tanpa Nama')}</b> &nbsp; | &nbsp;
+   Tanggal Proyek: ${esc(p.date||'-')} &nbsp; | &nbsp;
+   Status: ${esc(p.status||'Draft')}
+   ${q?` &nbsp; | &nbsp; Filter: <b>${esc(document.getElementById('globalFilter').value)}</b>`:''}
+ </div>`;
+
+ ['material','upah','bop'].forEach(key=>{
+   const arr=filtered[key];
+   const total=filteredTotal(key);
    out+=`<div class="print-section"><h3>${labels[key]}</h3>`;
+
    if(!arr.length){
-     out+=`<div class="print-line"><span class="desc">Tidak ada data.</span><span class="amount">Rp 0</span></div>`;
+     out+=`<div class="print-line"><span class="desc">Tidak ada data yang sesuai filter.</span><span class="amount">Rp 0</span></div>`;
    }else{
      arr.forEach(r=>{
        const t=(Number(r.qty)||0)*(Number(r.price)||0);
@@ -374,7 +394,9 @@ function printProject(){
    }
    out+=`<div class="print-subtotal">TOTAL ${labels[key]}: &nbsp; ${rupiah(total)}</div></div>`;
  });
- out+=`<div class="print-grand"><span>TOTAL HPP</span><span>${rupiah(totalProject(p))}</span></div>`;
+
+ out+=`<div class="print-grand"><span>TOTAL HPP${q?' (TERFILTER)':''}</span><span>${rupiah(grandTotal)}</span></div>`;
+
  document.getElementById('printReport').innerHTML=out;
  window.print();
  setTimeout(()=>{document.getElementById('printReport').innerHTML=''},500);
