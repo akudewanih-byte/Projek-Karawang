@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Project Cost Manager V3.2</title>
+<title>Project Cost Manager V3.3</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f6f8;color:#1f2937}
@@ -54,6 +54,40 @@ td input,td select{min-width:100px;padding:7px}
 }
 #printReport{display:none}
 @media print{
+  @page{size:A4;margin:12mm 14mm}
+  body{background:#fff;font-family:Arial,Helvetica,sans-serif;color:#111}
+  body > header,.container{display:none!important}
+  #printReport{display:block!important}
+  .pr-header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #111;padding-bottom:10px;margin-bottom:12px}
+  .pr-brand{font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+  .pr-sub{font-size:10px;color:#555;margin-top:3px}
+  .pr-report-no{text-align:right;font-size:10px;color:#444}
+  .pr-title{text-align:center;font-size:18px;font-weight:700;margin:12px 0 3px}
+  .pr-filter{text-align:center;font-size:9px;color:#555;margin-bottom:13px}
+  .pr-info{display:grid;grid-template-columns:1fr 1fr;column-gap:28px;border-top:1px solid #bbb;border-bottom:1px solid #bbb;padding:7px 0;margin-bottom:14px}
+  .pr-info-row{display:flex;font-size:10px;padding:2px 0}
+  .pr-info-label{width:82px;color:#666}
+  .pr-info-value{font-weight:600;flex:1}
+  .pr-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:8px 0 18px;border-bottom:1px solid #999}
+  .pr-summary-box{padding:7px 8px;border-top:1px solid #999}
+  .pr-summary-box:not(:last-child){border-right:1px solid #ddd}
+  .pr-summary-label{font-size:8px;color:#666;text-transform:uppercase}
+  .pr-summary-value{font-size:11px;font-weight:700;margin-top:3px}
+  .pr-section{margin-top:14px}
+  .pr-section-title{font-size:11px;font-weight:700;text-transform:uppercase;border-bottom:1px solid #333;padding-bottom:4px;margin-bottom:4px}
+  .pr-line{display:grid;grid-template-columns:70px 1fr 55px 70px 95px;gap:5px;font-size:9px;padding:3px 0;border-bottom:1px dotted #ccc}
+  .pr-line-head{font-weight:700;border-bottom:1px solid #888!important;border-bottom-style:solid!important}
+  .pr-right{text-align:right}
+  .pr-subtotal{display:flex;justify-content:flex-end;font-size:10px;font-weight:700;padding-top:5px}
+  .pr-grand{display:flex;justify-content:space-between;border-top:2px solid #111;border-bottom:2px solid #111;padding:8px 0;margin-top:18px;font-size:14px;font-weight:700}
+  .pr-note{font-size:8px;color:#666;margin-top:8px}
+  .pr-sign{display:grid;grid-template-columns:1fr 1fr;gap:70px;margin-top:38px}
+  .pr-sign-box{text-align:center;font-size:9px}
+  .pr-sign-space{height:48px}
+  .pr-photo{max-width:75px;max-height:55px;object-fit:cover;margin-top:4px}
+  .pr-footer{margin-top:18px;padding-top:6px;border-top:1px solid #bbb;font-size:8px;color:#666;text-align:center}
+}
+@media print{
   @page{size:A4;margin:14mm}
   body{background:#fff;font-family:Arial,Helvetica,sans-serif;color:#111}
   body > header,.container{display:none!important}
@@ -73,7 +107,7 @@ td input,td select{min-width:100px;padding:7px}
 <body>
 <header>
   <div class="container">
-    <h1>Project Cost Manager V3.2</h1>
+    <h1>Project Cost Manager V3.3</h1>
     <p>Kelola Material, Upah, BOP dan HPP proyek dalam satu dashboard.</p>
   </div>
 </header>
@@ -117,29 +151,23 @@ td input,td select{min-width:100px;padding:7px}
     </div>
 
     <div class="card">
-      <h2>Data Proyek</h2>
+      <h2>Data Proyek & Laporan</h2>
       <div class="project-head">
-        <div>
-          <label>Nama Proyek</label>
-          <input id="pName" placeholder="Contoh: Proyek Gudang A">
-        </div>
-        <div>
-          <label>Tanggal</label>
-          <input id="pDate" type="date">
-        </div>
-        <div>
-          <label>Status</label>
-          <select id="pStatus">
-            <option>Draft</option><option>Berjalan</option><option>Selesai</option>
-          </select>
-        </div>
+        <div><label>Nama Proyek</label><input id="pName" placeholder="Contoh: Proyek Gudang A"></div>
+        <div><label>Tanggal</label><input id="pDate" type="date"></div>
+        <div><label>Status</label><select id="pStatus"><option>Draft</option><option>Berjalan</option><option>Selesai</option></select></div>
         <div>
           <label>Foto Proyek</label>
-          <div class="photo-box">
-            <img id="projectPhotoPreview" class="photo-preview">
-            <input id="pPhoto" type="file" accept="image/*" onchange="previewProjectPhoto(event)">
-          </div>
+          <div class="photo-box"><img id="projectPhotoPreview" class="photo-preview"><input id="pPhoto" type="file" accept="image/*" onchange="previewProjectPhoto(event)"></div>
         </div>
+      </div>
+      <div class="grid" style="margin-top:12px">
+        <div><label>Nama Perusahaan</label><input id="pCompany" placeholder="Nama usaha/perusahaan"></div>
+        <div><label>No. Laporan / No. Proyek</label><input id="pReportNo" placeholder="Contoh: PCM-001"></div>
+        <div><label>Klien</label><input id="pClient" placeholder="Nama klien"></div>
+        <div><label>Lokasi Proyek</label><input id="pLocation" placeholder="Lokasi proyek"></div>
+        <div><label>Dibuat Oleh</label><input id="pPreparedBy" placeholder="Nama penyusun"></div>
+        <div><label>Disetujui Oleh</label><input id="pApprovedBy" placeholder="Nama penanggung jawab"></div>
       </div>
     </div>
 
@@ -180,7 +208,7 @@ function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2
 function current(){return db.projects.find(p=>p.id===currentProjectId)}
 
 function addProject(){
- const p={id:uid(),name:'Proyek Baru',date:new Date().toISOString().slice(0,10),status:'Draft',photo:'',material:[],upah:[],bop:[]};
+ const p={id:uid(),name:'Proyek Baru',date:new Date().toISOString().slice(0,10),status:'Draft',photo:'',company:'',reportNo:'',client:'',location:'',preparedBy:'',approvedBy:'',material:[],upah:[],bop:[]};
  db.projects.unshift(p); saveDB(); openProject(p.id);
 }
 function deleteCurrentProject(){
@@ -192,6 +220,12 @@ function saveProjectMeta(){
  p.name=document.getElementById('pName').value.trim()||'Tanpa Nama';
  p.date=document.getElementById('pDate').value;
  p.status=document.getElementById('pStatus').value;
+ p.company=document.getElementById('pCompany').value.trim();
+ p.reportNo=document.getElementById('pReportNo').value.trim();
+ p.client=document.getElementById('pClient').value.trim();
+ p.location=document.getElementById('pLocation').value.trim();
+ p.preparedBy=document.getElementById('pPreparedBy').value.trim();
+ p.approvedBy=document.getElementById('pApprovedBy').value.trim();
  saveDB(); renderDashboard(); renderDetail(); alert('Data proyek berhasil disimpan.');
 }
 function backDashboard(){currentProjectId=null;document.getElementById('detail').classList.add('hidden');document.getElementById('dashboard').classList.remove('hidden');renderDashboard()}
@@ -201,6 +235,12 @@ function openProject(id){
  document.getElementById('pName').value=p.name||'';
  document.getElementById('pDate').value=p.date||'';
  document.getElementById('pStatus').value=p.status||'Draft';
+ document.getElementById('pCompany').value=p.company||'';
+ document.getElementById('pReportNo').value=p.reportNo||'';
+ document.getElementById('pClient').value=p.client||'';
+ document.getElementById('pLocation').value=p.location||'';
+ document.getElementById('pPreparedBy').value=p.preparedBy||'';
+ document.getElementById('pApprovedBy').value=p.approvedBy||'';
  const img=document.getElementById('projectPhotoPreview');
  if(p.photo){img.src=p.photo;img.style.display='block'}else{img.style.display='none'}
  document.getElementById('globalFilter').value='';
@@ -356,46 +396,64 @@ function printProject(){
  const p=current(); if(!p)return;
  const labels={material:'MATERIAL',upah:'UPAH',bop:'BOP'};
  const q=(document.getElementById('globalFilter').value||'').trim().toLowerCase();
-
- // PDF mengikuti filter yang sedang aktif.
  const filtered={};
  ['material','upah','bop'].forEach(key=>{
-   filtered[key]=(p[key]||[]).filter(r=>
-     !q || [r.date,r.name,r.kind,r.unit].join(' ').toLowerCase().includes(q)
-   );
+   filtered[key]=(p[key]||[]).filter(r=>!q || [r.date,r.name,r.kind,r.unit].join(' ').toLowerCase().includes(q));
  });
+ const total=key=>totalRows(filtered[key]);
+ const grand=total('material')+total('upah')+total('bop');
+ const reportNo=p.reportNo||('PCM-'+String(p.id).slice(-6).toUpperCase());
 
- const filteredTotal=key=>totalRows(filtered[key]);
- const grandTotal=filteredTotal('material')+filteredTotal('upah')+filteredTotal('bop');
-
- let out=`<div class="print-title">REKAP BIAYA PROYEK</div>
- <div class="print-meta">
-   <b>${esc(p.name||'Tanpa Nama')}</b> &nbsp; | &nbsp;
-   Tanggal Proyek: ${esc(p.date||'-')} &nbsp; | &nbsp;
-   Status: ${esc(p.status||'Draft')}
-   ${q?` &nbsp; | &nbsp; Filter: <b>${esc(document.getElementById('globalFilter').value)}</b>`:''}
+ let out=`<div class="pr-header">
+   <div>
+     <div class="pr-brand">${esc(p.company||'PROJECT COST MANAGER')}</div>
+     <div class="pr-sub">${esc(p.location||'Laporan biaya proyek')}</div>
+   </div>
+   <div class="pr-report-no">NO. LAPORAN<br><b>${esc(reportNo)}</b></div>
+ </div>
+ <div class="pr-title">LAPORAN REKAPITULASI BIAYA PROYEK</div>
+ ${q?`<div class="pr-filter">Laporan ini dicetak berdasarkan filter: <b>${esc(document.getElementById('globalFilter').value)}</b></div>`:''}
+ <div class="pr-info">
+   <div class="pr-info-row"><span class="pr-info-label">Proyek</span><span class="pr-info-value">${esc(p.name||'-')}</span></div>
+   <div class="pr-info-row"><span class="pr-info-label">Tanggal</span><span class="pr-info-value">${esc(p.date||'-')}</span></div>
+   <div class="pr-info-row"><span class="pr-info-label">Klien</span><span class="pr-info-value">${esc(p.client||'-')}</span></div>
+   <div class="pr-info-row"><span class="pr-info-label">Status</span><span class="pr-info-value">${esc(p.status||'Draft')}</span></div>
+ </div>
+ <div class="pr-summary">
+   <div class="pr-summary-box"><div class="pr-summary-label">Material</div><div class="pr-summary-value">${rupiah(total('material'))}</div></div>
+   <div class="pr-summary-box"><div class="pr-summary-label">Upah</div><div class="pr-summary-value">${rupiah(total('upah'))}</div></div>
+   <div class="pr-summary-box"><div class="pr-summary-label">BOP</div><div class="pr-summary-value">${rupiah(total('bop'))}</div></div>
+   <div class="pr-summary-box"><div class="pr-summary-label">Total HPP</div><div class="pr-summary-value">${rupiah(grand)}</div></div>
  </div>`;
 
  ['material','upah','bop'].forEach(key=>{
    const arr=filtered[key];
-   const total=filteredTotal(key);
-   out+=`<div class="print-section"><h3>${labels[key]}</h3>`;
-
+   out+=`<div class="pr-section"><div class="pr-section-title">${labels[key]}</div>
+     <div class="pr-line pr-line-head"><span>Tanggal</span><span>Uraian / Jenis</span><span class="pr-right">Qty</span><span class="pr-right">Satuan</span><span class="pr-right">Jumlah</span></div>`;
    if(!arr.length){
-     out+=`<div class="print-line"><span class="desc">Tidak ada data yang sesuai filter.</span><span class="amount">Rp 0</span></div>`;
+     out+=`<div class="pr-line"><span>-</span><span>Tidak ada data${q?' yang sesuai filter':''}.</span><span></span><span></span><span class="pr-right">Rp 0</span></div>`;
    }else{
      arr.forEach(r=>{
        const t=(Number(r.qty)||0)*(Number(r.price)||0);
-       out+=`<div class="print-line">
-         <span class="desc">${esc(r.date||'-')} — ${esc(r.name||'Tanpa nama')} (${esc(r.kind||'-')}) &nbsp; ${esc(r.qty)} ${esc(r.unit||'')}</span>
-         <span class="amount">${rupiah(t)}</span>
+       out+=`<div class="pr-line">
+         <span>${esc(r.date||'-')}</span>
+         <span>${esc(r.name||'Tanpa nama')} <span style="color:#666">(${esc(r.kind||'-')})</span></span>
+         <span class="pr-right">${esc(r.qty)}</span>
+         <span class="pr-right">${esc(r.unit||'-')}</span>
+         <span class="pr-right">${rupiah(t)}</span>
        </div>`;
      });
    }
-   out+=`<div class="print-subtotal">TOTAL ${labels[key]}: &nbsp; ${rupiah(total)}</div></div>`;
+   out+=`<div class="pr-subtotal">TOTAL ${labels[key]}: &nbsp; ${rupiah(total(key))}</div></div>`;
  });
 
- out+=`<div class="print-grand"><span>TOTAL HPP${q?' (TERFILTER)':''}</span><span>${rupiah(grandTotal)}</span></div>`;
+ out+=`<div class="pr-grand"><span>TOTAL HPP${q?' (TERFILTER)':''}</span><span>${rupiah(grand)}</span></div>
+ <div class="pr-note">Catatan: laporan ini merupakan rekap biaya berdasarkan data yang tersimpan pada Project Cost Manager. Nilai total mengikuti filter yang aktif saat laporan dicetak.</div>
+ <div class="pr-sign">
+   <div class="pr-sign-box">Dibuat Oleh<div class="pr-sign-space"></div><b>${esc(p.preparedBy||'________________')}</b></div>
+   <div class="pr-sign-box">Disetujui Oleh<div class="pr-sign-space"></div><b>${esc(p.approvedBy||'________________')}</b></div>
+ </div>
+ <div class="pr-footer">Project Cost Manager • ${esc(p.name||'Proyek')}</div>`;
 
  document.getElementById('printReport').innerHTML=out;
  window.print();
